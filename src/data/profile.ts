@@ -19,7 +19,12 @@ export type Project = {
   name: string;
   kind: string;
   summary: string;
-  built: string[];
+  /** "saas" = multi-tenant, database per company. "client" = built for one client. */
+  tenancy: "saas" | "client";
+  /** What I personally did on the project */
+  contribution: string[];
+  /** How it is built */
+  technical: string[];
   modules: string[];
   stack: string[];
   url?: string;
@@ -30,8 +35,8 @@ export type Project = {
 
 export const stats = [
   { value: "2+", label: "years shipping production software" },
-  { value: "4", label: "business products built end to end" },
-  { value: "2", label: "multi-tenant SaaS platforms live" },
+  { value: "4", label: "business products: an HRMS, a CRM and two ERPs" },
+  { value: "3", label: "multi-tenant SaaS products, one database per company" },
   { value: "4", label: "teams in Delhi NCR" },
 ];
 
@@ -54,6 +59,21 @@ export const marquee = [
 
 const stack = ["React.js", "Laravel", "PHP", "MySQL", "REST APIs"];
 
+// Shared by EZHRM, EZCRM and Sugam ERP: what I own on the SaaS products.
+const saasContribution = [
+  "Worked across the front end and back end, with most of my time on the backend",
+  "Built authentication, the API layer, and the validation and permission checks on every request",
+  "Built company signup with email OTP verification",
+];
+
+// Shared architecture of the three SaaS products.
+export const saasTechnical = [
+  "Each company gets its own database. A central master database maps every company to its database.",
+  "Requests are routed to the signed-in company's database, so one company has no way to reach another's data.",
+  "Each company sets up its own masters (settings, lists and rules) after signing up",
+  "Audit logs are kept separately for every company",
+];
+
 export const projects: Project[] = [
   {
     slug: "ezhrm",
@@ -61,10 +81,15 @@ export const projects: Project[] = [
     kind: "Multi-tenant HR and payroll platform",
     summary:
       "One system where many companies run their HR: employee records, attendance, leave, payroll and approvals. Each company's data stays separate from the others.",
-    built: [
-      "Tenant-based architecture so multiple organisations share one deployment safely",
-      "Secure authentication and role-based access across company and employee views",
-      "Attendance, employee records and day-to-day HR workflows in React and Laravel",
+    tenancy: "saas",
+    contribution: [
+      ...saasContribution,
+      "Role-based access for company admins, managers and employees",
+    ],
+    technical: [
+      "Separate database for every company, routed through a central master database",
+      "Each company sets up its own masters and gets its own audit log",
+      "React.js front end talking to Laravel REST APIs on MySQL",
     ],
     modules: [
       "Attendance",
@@ -92,10 +117,15 @@ export const projects: Project[] = [
     kind: "Multi-tenant sales CRM",
     summary:
       "A CRM for sales teams to track leads from first contact to closed deal, with follow-ups, assignment rules and a live pipeline view for managers.",
-    built: [
-      "Lead, deal, contact and follow-up modules with configurable dashboards",
-      "Lead and deal assignment, user roles and activity logging per organisation",
-      "Pipeline-by-stage reporting and centralised sales management",
+    tenancy: "saas",
+    contribution: [
+      ...saasContribution,
+      "Backend for leads, deals, follow-ups and assignment",
+    ],
+    technical: [
+      "Separate database for every company, routed through a central master database",
+      "Each company sets up its own masters and gets its own audit log",
+      "React.js dashboards on Laravel REST APIs, with a pipeline view by stage",
     ],
     modules: [
       "Leads",
@@ -118,12 +148,19 @@ export const projects: Project[] = [
   {
     slug: "dst-erp",
     name: "DST Production ERP",
-    kind: "Production ERP for a manufacturer",
+    kind: "Production ERP built for one manufacturer",
     summary:
       "Runs a factory's order flow from sales order to dispatch: which product goes through which process on which machine, what is in production, and what stock is ready to ship.",
-    built: [
-      "Process-wise modules mapping products to processes and processes to machines",
-      "Production runs, queue and waste logging with role-based access per user",
+    tenancy: "client",
+    contribution: [
+      "Worked across the front end and back end, with most of my time on the backend",
+      "Built authentication, the API layer, and the validation and permission checks on every request",
+      "Process-wise modules: product to process, process to machine, and user access",
+    ],
+    technical: [
+      "Built for a single client, DST, rather than as SaaS: one deployment and one database",
+      "Role-based access, so each user only sees the modules for their process",
+      "React.js interface inside a Laravel application, on MySQL",
       "Product-wise inventory showing ordered, produced and dispatched quantities",
     ],
     modules: [
@@ -146,13 +183,18 @@ export const projects: Project[] = [
   {
     slug: "sugam-erp",
     name: "Sugam ERP",
-    kind: "SaaS ERP for end-to-end operations",
+    kind: "Multi-tenant SaaS ERP for manufacturers",
     summary:
       "Connects every department of a manufacturing business: the sales team in the field, the production floor, quality checks, stores, billing and the gate. One order can be followed from the first customer visit to the truck leaving the gate.",
-    built: [
-      "Salesman work and customer visit tracking",
-      "BOM-driven in-house production of semi-finished goods",
-      "Testing, gate pass, invoicing and billing",
+    tenancy: "saas",
+    contribution: [
+      ...saasContribution,
+      "Backend for connected modules that hand one record from department to department",
+    ],
+    technical: [
+      "Separate database for every company, routed through a central master database",
+      "Each company sets up its own masters and gets its own audit log",
+      "React.js front end on Laravel REST APIs and MySQL",
     ],
     modules: [
       "Quotation",
@@ -243,8 +285,8 @@ export const expertise = [
   {
     icon: "database",
     title: "Database design",
-    body: "MySQL schemas for multi-tenant products, plus query tuning when tables get big.",
-    tags: ["MySQL", "Multi-tenancy", "Optimisation"],
+    body: "Multi-tenant MySQL with a separate database for every company and a central master database, plus query tuning.",
+    tags: ["MySQL", "Database per tenant", "Optimisation"],
   },
   {
     icon: "cloud",
@@ -267,8 +309,8 @@ export const expertise = [
   {
     icon: "shield",
     title: "Auth and permissions",
-    body: "Login, role management and access control, so each user sees only what they should.",
-    tags: ["Authentication", "Roles", "RBAC"],
+    body: "Signup with email OTP, login, roles and permission checks on every API request.",
+    tags: ["OTP verification", "Roles", "Audit logs"],
   },
   {
     icon: "workflow",
@@ -300,7 +342,7 @@ export const experience = [
       "Built CRM and business applications in Laravel, PHP, MySQL and JavaScript",
       "Created admin and user panels with role-based permissions and access control",
       "Delivered lead management, follow-ups, sales tracking and project modules",
-      "Optimised queries and backend APIs for scale",
+      "Optimised database queries, backend APIs and application performance",
     ],
   },
   {

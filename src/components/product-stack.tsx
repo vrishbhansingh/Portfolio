@@ -82,8 +82,8 @@ export function ProductStack() {
               <Activity className="size-4" />
             </span>
             <div className="leading-tight">
-              <p className="text-[11px] text-muted">EZHRM attendance</p>
-              <p className="text-sm font-semibold">58 employees synced</p>
+              <p className="text-[11px] text-muted">EZHRM</p>
+              <p className="text-sm font-semibold">Attendance, leave and payroll</p>
             </div>
           </div>
         </motion.div>
@@ -96,8 +96,8 @@ export function ProductStack() {
               <IndianRupee className="size-4" />
             </span>
             <div className="leading-tight">
-              <p className="text-[11px] text-muted">EZCRM won revenue</p>
-              <p className="text-sm font-semibold">₹1,63,697</p>
+              <p className="text-[11px] text-muted">EZCRM</p>
+              <p className="text-sm font-semibold">Leads to closed deals</p>
             </div>
           </div>
         </motion.div>
@@ -110,8 +110,8 @@ export function ProductStack() {
               <Factory className="size-4" />
             </span>
             <div className="leading-tight">
-              <p className="text-[11px] text-muted">DST ERP floor</p>
-              <p className="text-sm font-semibold">3 orders in production</p>
+              <p className="text-[11px] text-muted">DST Production ERP</p>
+              <p className="text-sm font-semibold">Sales order to dispatch</p>
             </div>
           </div>
         </motion.div>

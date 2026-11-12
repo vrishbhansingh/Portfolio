@@ -69,7 +69,7 @@ export function Stack() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading
           title="Full stack, for real"
-          body="From the screen a user clicks to the query that answers it. These are the tools I ship production code with every day."
+          body="From the screen a user clicks to the query that answers it. These are the tools behind the products on this page."
         />
 
         <div className="mt-14 grid gap-4 md:grid-cols-6">
@@ -95,7 +95,7 @@ export function Stack() {
             <p className="text-sm text-muted">Application and data</p>
             <h3 className="display mt-1 text-3xl font-semibold">Laravel APIs on MySQL</h3>
             <p className="mt-2 max-w-md text-[15px] text-muted">
-              MVC backends, authentication, role management and queries tuned for multi-tenant scale.
+              MVC backends, authentication, role management and optimised database queries.
             </p>
             <ToolGrid items={back} />
           </SpotlightCard>

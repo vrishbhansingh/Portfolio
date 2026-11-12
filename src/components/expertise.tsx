@@ -24,7 +24,7 @@ export function Expertise() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading
           title="What I can take on"
-          body="From the first screen to a live server. I handle the whole job, so a project doesn't stall waiting for someone else."
+          body="Work across the front end, the back end, the database and the server it runs on."
         />
 
         <ul className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

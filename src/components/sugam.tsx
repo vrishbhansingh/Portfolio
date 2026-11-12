@@ -5,6 +5,7 @@ import { MapPin, Boxes, ShieldCheck } from "lucide-react";
 import { projects, sugamDepartments } from "@/data/profile";
 import { OrderFlow } from "./order-flow";
 import { SectionHeading } from "./section-heading";
+import { ProjectDetails } from "./work";
 
 const highlights = [
   {
@@ -19,7 +20,7 @@ const highlights = [
   },
   {
     icon: ShieldCheck,
-    title: "Nothing leaves untracked",
+    title: "Tracked to the gate",
     body: "Goods are tested before they're stocked, billed before they ship, and logged on a gate pass when they leave.",
   },
 ];
@@ -34,7 +35,7 @@ export function Sugam() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <div className="flex flex-wrap items-center gap-3">
           <span className="display text-sm font-semibold text-green">Sugam ERP</span>
-          <span className="rounded-full bg-sunken px-2.5 py-0.5 text-xs font-medium text-muted">Client project</span>
+          <span className="rounded-full bg-sunken px-2.5 py-0.5 text-xs font-medium text-muted">Multi-tenant SaaS</span>
         </div>
         <div className="mt-3">
           <SectionHeading title="From customer visit to the factory gate" body={sugam.summary} />
@@ -91,6 +92,8 @@ export function Sugam() {
           </div>
           <p className="mt-5 text-sm text-muted">Built with {sugam.stack.join(", ")}.</p>
         </div>
+
+        <ProjectDetails project={sugam} showSummary={false} showModules={false} />
       </div>
     </section>
   );

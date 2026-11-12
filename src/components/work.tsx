@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { ArrowUpRight, Check } from "lucide-react";
+import { ArrowUpRight, Building, Check, Layers, UserRound, Wrench } from "lucide-react";
+import { TenancyDiagram } from "./tenancy-diagram";
 import { motion, useReducedMotion, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
 import { projects, type Project } from "@/data/profile";
@@ -31,7 +32,7 @@ function Showcase({ project, index }: { project: Project; index: number }) {
             {project.url ? (
               <span className="inline-flex items-center gap-1.5 rounded-full bg-green-soft px-2.5 py-0.5 text-xs font-medium text-green">
                 <span className="size-1.5 animate-pulse rounded-full bg-green" aria-hidden />
-                Live in production
+                Live
               </span>
             ) : (
               <span className="rounded-full bg-sunken px-2.5 py-0.5 text-xs font-medium text-muted">Client project</span>
@@ -88,35 +89,88 @@ function Showcase({ project, index }: { project: Project; index: number }) {
         </div>
       )}
 
-      <div className="mt-8 grid gap-4 md:grid-cols-3">
-        <SpotlightCard className="rounded-2xl border border-line bg-surface/80 p-6 backdrop-blur">
-          <h4 className="text-sm font-semibold text-muted">What it does</h4>
+      <ProjectDetails project={project} />
+    </article>
+  );
+}
+
+const card = "rounded-2xl border border-line bg-surface/80 p-6 backdrop-blur";
+
+export function ProjectDetails({
+  project,
+  showSummary = true,
+  showModules = true,
+}: {
+  project: Project;
+  showSummary?: boolean;
+  showModules?: boolean;
+}) {
+  return (
+    <div className="mt-8 grid gap-4 md:grid-cols-2">
+      {showSummary && (
+        <SpotlightCard className={card}>
+          <div className="flex flex-wrap items-center gap-2">
+            <h4 className="text-sm font-semibold text-muted">What it does</h4>
+            <span className="ml-auto inline-flex items-center gap-1.5 rounded-md bg-sunken px-2 py-0.5 text-xs text-muted">
+              {project.tenancy === "saas" ? (
+                <>
+                  <Layers className="size-3.5" aria-hidden /> Multi-tenant SaaS
+                </>
+              ) : (
+                <>
+                  <Building className="size-3.5" aria-hidden /> Built for one client
+                </>
+              )}
+            </span>
+          </div>
           <p className="mt-3 text-[15px] leading-relaxed">{project.summary}</p>
         </SpotlightCard>
-        <SpotlightCard className="rounded-2xl border border-line bg-surface/80 p-6 backdrop-blur">
-          <h4 className="text-sm font-semibold text-muted">What I built</h4>
-          <ul className="mt-3 space-y-2.5 text-[15px] leading-relaxed">
-            {project.built.map((b) => (
-              <li key={b} className="flex gap-2.5">
-                <Check className="mt-1 size-4 shrink-0" style={{ color: project.accent }} aria-hidden />
-                {b}
-              </li>
-            ))}
-          </ul>
-        </SpotlightCard>
-        <SpotlightCard className="rounded-2xl border border-line bg-surface/80 p-6 backdrop-blur">
-          <h4 className="text-sm font-semibold text-muted">Modules</h4>
-          <ul className="mt-3 flex flex-wrap gap-1.5">
-            {project.modules.map((m) => (
-              <li key={m} className="rounded-lg border border-line bg-paper px-2.5 py-1 text-[13px]">
-                {m}
-              </li>
-            ))}
-          </ul>
-          <p className="mt-5 border-t border-line pt-4 text-sm text-muted">{project.stack.join("  /  ")}</p>
-        </SpotlightCard>
-      </div>
-    </article>
+      )}
+      {showModules && (
+      <SpotlightCard className={card}>
+        <h4 className="text-sm font-semibold text-muted">Modules in the product</h4>
+        <ul className="mt-3 flex flex-wrap gap-1.5">
+          {project.modules.map((m) => (
+            <li key={m} className="rounded-lg border border-line bg-paper px-2.5 py-1 text-[13px]">
+              {m}
+            </li>
+          ))}
+        </ul>
+        <p className="mt-5 border-t border-line pt-4 text-sm text-muted">{project.stack.join("  /  ")}</p>
+      </SpotlightCard>
+      )}
+      <SpotlightCard className={card}>
+        <h4 className="flex items-center gap-2 text-sm font-semibold text-muted">
+          <UserRound className="size-4" aria-hidden /> My contribution
+        </h4>
+        <ul className="mt-3 space-y-2.5 text-[15px] leading-relaxed">
+          {project.contribution.map((b) => (
+            <li key={b} className="flex gap-2.5">
+              <Check className="mt-1 size-4 shrink-0" style={{ color: project.accent }} aria-hidden />
+              {b}
+            </li>
+          ))}
+        </ul>
+      </SpotlightCard>
+      <SpotlightCard className={card}>
+        <h4 className="flex items-center gap-2 text-sm font-semibold text-muted">
+          <Wrench className="size-4" aria-hidden /> How it&apos;s built
+        </h4>
+        <ul className="mt-3 space-y-2.5 text-[15px] leading-relaxed">
+          {project.technical.map((b) => (
+            <li key={b} className="flex gap-2.5">
+              <span className="mt-[0.6em] size-1.5 shrink-0 rounded-full" style={{ background: project.accent }} aria-hidden />
+              {b}
+            </li>
+          ))}
+        </ul>
+        {project.tenancy === "saas" && (
+          <a href="#architecture" className="mt-4 inline-block text-sm font-medium text-indigo underline-offset-4 hover:underline">
+            See the multi-tenant architecture
+          </a>
+        )}
+      </SpotlightCard>
+    </div>
   );
 }
 
@@ -127,9 +181,12 @@ export function Work() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeading
           title="Products I've built"
-          body="Business software where many companies, roles and departments share one system. Every screen below is from the running product."
+          body="Three multi-tenant SaaS products and one ERP built for a single client. Screens are from each product's admin dashboard, shown with demo data."
         />
-        <div className="mt-20 space-y-32">
+        <div id="architecture" className="mt-14 scroll-mt-28">
+          <TenancyDiagram />
+        </div>
+        <div className="mt-28 space-y-32">
           {withScreens.map((p, i) => (
             <Showcase key={p.slug} project={p} index={i} />
           ))}
