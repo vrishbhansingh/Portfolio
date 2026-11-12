@@ -1,0 +1,193 @@
+@import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Palette: chalk paper, graphite ink, indigo action, violet, saffron "in process", ledger green "done". */
+:root {
+  --paper: #f3f4f0;
+  --surface: #ffffff;
+  --sunken: #e9ebe5;
+  --ink: #141a26;
+  --muted: #5a6273;
+  --line: #d9dcd3;
+  --indigo: #3b3fd8;
+  --indigo-soft: #e4e5fb;
+  --violet: #7a4ff0;
+  --saffron: #c97f00;
+  --saffron-soft: #fbefd6;
+  --green: #18804f;
+  --green-soft: #dcf0e5;
+  --glow-a: rgb(59 63 216 / 0.18);
+  --glow-b: rgb(232 155 12 / 0.12);
+  --grid: rgb(20 26 38 / 0.06);
+  color-scheme: light;
+}
+
+.dark {
+  --paper: #0c0f16;
+  --surface: #141925;
+  --sunken: #090b11;
+  --ink: #eceef4;
+  --muted: #98a1b3;
+  --line: #252c3b;
+  --indigo: #8f93ff;
+  --indigo-soft: #222548;
+  --violet: #b294ff;
+  --saffron: #f4b43a;
+  --saffron-soft: #3a2c10;
+  --green: #4fc48b;
+  --green-soft: #12301f;
+  --glow-a: rgb(110 116 255 / 0.22);
+  --glow-b: rgb(244 180 58 / 0.1);
+  --grid: rgb(236 238 244 / 0.05);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-indigo: var(--indigo);
+  --color-indigo-soft: var(--indigo-soft);
+  --color-violet: var(--violet);
+  --color-saffron: var(--saffron);
+  --color-saffron-soft: var(--saffron-soft);
+  --color-green: var(--green);
+  --color-green-soft: var(--green-soft);
+  --font-sans: var(--font-plex);
+  --font-display: var(--font-bricolage);
+}
+
+html {
+  scroll-padding-top: 6rem;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-plex), system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: clip;
+}
+
+::selection {
+  background: var(--indigo);
+  color: var(--surface);
+}
+
+:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+.display {
+  font-family: var(--font-bricolage), var(--font-plex), sans-serif;
+  font-optical-sizing: auto;
+  letter-spacing: -0.02em;
+}
+
+/* Blueprint grid used behind the hero and sections */
+.bg-grid {
+  background-image:
+    linear-gradient(to right, var(--grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Gradient text used once, on the footer wordmark */
+.text-sheen {
+  background: linear-gradient(100deg, var(--ink) 20%, var(--indigo) 50%, var(--violet) 65%, var(--ink) 85%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Card that lights up under the cursor (see SpotlightCard) */
+.spotlight {
+  position: relative;
+  isolation: isolate;
+}
+.spotlight::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  background: radial-gradient(420px circle at var(--x, 50%) var(--y, 50%), var(--glow-a), transparent 60%);
+}
+.spotlight:hover::before {
+  opacity: 1;
+}
+
+/* Gradient hairline border */
+.ring-gradient {
+  position: relative;
+}
+.ring-gradient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(140deg, var(--indigo), transparent 35%, transparent 65%, var(--violet));
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+@keyframes marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+.group:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes sheen {
+  to {
+    background-position: -200% 0;
+  }
+}
+.animate-sheen {
+  animation: sheen 8s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
