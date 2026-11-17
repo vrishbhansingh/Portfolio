@@ -1,8 +1,8 @@
-// Contact form endpoint. Sends mail over SMTP using nodemailer.
-// Configure it in .env.local (see .env.example). Without SMTP settings,
-// development logs the message and production returns a clear error.
+// Contact form endpoint. Sends mail over SMTP (see src/lib/mail.ts and .env.example).
+// Without SMTP settings, development logs the message and production returns a clear error.
 
-import nodemailer from "nodemailer";
+import { profile } from "@/data/profile";
+import { autoReplyEmail, createTransport, notificationEmail } from "@/lib/mail";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const hits = new Map<string, number[]>();
@@ -13,10 +13,6 @@ function rateLimited(ip: string) {
   recent.push(now);
   hits.set(ip, recent);
   return recent.length > 5;
-}
-
-function escapeHtml(s: string) {
-  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
 }
 
 export async function POST(request: Request) {
@@ -45,9 +41,8 @@ export async function POST(request: Request) {
   if (!EMAIL_RE.test(email)) return Response.json({ error: "Check the email address." }, { status: 400 });
   if (message.length < 10) return Response.json({ error: "Write a few more words in the message." }, { status: 400 });
 
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, CONTACT_TO_EMAIL, CONTACT_FROM_EMAIL } = process.env;
-
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !CONTACT_TO_EMAIL) {
+  const mail = createTransport();
+  if (!mail) {
     if (process.env.NODE_ENV !== "production") {
       console.log("[contact] SMTP not configured. Message received:", { name, email, reason, message });
       return Response.json({ ok: true });
@@ -55,26 +50,27 @@ export async function POST(request: Request) {
     return Response.json({ error: "The contact form isn't connected to email yet." }, { status: 503 });
   }
 
-  const port = Number(SMTP_PORT ?? 587);
-  const transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port,
-    secure: SMTP_SECURE ? SMTP_SECURE === "true" : port === 465,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
-  });
+  const { cfg, transporter } = mail;
 
   try {
     await transporter.sendMail({
-      from: CONTACT_FROM_EMAIL || `Portfolio contact <${SMTP_USER}>`,
-      to: CONTACT_TO_EMAIL,
-      replyTo: `${name} <${email}>`,
-      subject: `${reason}: message from ${name}`,
-      text: `${name} (${email})\n${reason}\n\n${message}`,
-      html: `<p><strong>${escapeHtml(name)}</strong> (${escapeHtml(email)})</p><p>${escapeHtml(reason)}</p><p style="white-space:pre-wrap">${escapeHtml(message)}</p>`,
+      from: cfg.from,
+      to: cfg.to,
+      replyTo: { name, address: email },
+      ...notificationEmail({ name, email, reason, message }),
     });
   } catch (err) {
     console.error("[contact] SMTP error", err);
     return Response.json({ error: "The email server didn't accept the message." }, { status: 502 });
+  }
+
+  // The confirmation is a courtesy: if it fails, the message still reached you.
+  if (cfg.autoReply) {
+    try {
+      await transporter.sendMail({ from: cfg.from, to: email, ...autoReplyEmail(profile.links) });
+    } catch (err) {
+      console.error("[contact] Auto-reply failed", err);
+    }
   }
 
   return Response.json({ ok: true });
